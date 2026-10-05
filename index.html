@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Productivity and cost comparison between the Formlabs Form 4L (8 hours) and the HeyGears UltraCraft A3D (24 hours).">
+<title>Form 4L vs A3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+/* Layout: inputs on the left (sticky on desktop), results on the right; one column below 900px.
+   Validated palette (light surface #FCFCFB, dark #1A1A19): blue = Form 4L, orange = A3D. */
+:root{
+  --bg:#FCFCFB; --panel:#F3F4F6; --ink:#1B2230; --ink2:#4A5468; --muted:#6B7488;
+  --line:#DDE1E8; --grid:#E9ECF1;
+  --f4l:#2B5FB4; --a3d:#C4551A;
+  --ok:#1E7A4C; --warn:#9A6A00;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1A1A19; --panel:#232426; --ink:#EDEEF1; --ink2:#B9BFCC; --muted:#8E96A8;
+  --line:#3A3D44; --grid:#2C2E33; --f4l:#4C82D6; --a3d:#D8692A; --ok:#5CC08D; --warn:#E0B24A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1A1A19; --panel:#232426; --ink:#EDEEF1; --ink2:#B9BFCC; --muted:#8E96A8;
+  --line:#3A3D44; --grid:#2C2E33; --f4l:#4C82D6; --a3d:#D8692A; --ok:#5CC08D; --warn:#E0B24A; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:1200px;margin-inline:auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:clamp(1.7rem,4.2vw,2.5rem);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+h2{font-size:1.15rem;font-weight:700;letter-spacing:-.01em}
+h3{font-size:.95rem;font-weight:700}
+.lede{color:var(--ink2);max-width:62ch;margin:.6rem 0 0}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px}
+.chip{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.9rem}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block;flex:none}
+.sw.f{background:var(--f4l)} .sw.a{background:var(--a3d)}
+
+.layout{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:28px;margin-top:28px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
+.controls{background:var(--panel);border-radius:10px;padding:18px;position:sticky;top:env(safe-area-inset-top,0px)}
+@media (max-width:900px){.controls{position:static}}
+.controls h2{margin-bottom:4px}
+.grp{margin-top:16px}
+.grp>.eyebrow{display:block;margin-bottom:6px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 84px 84px;gap:8px;align-items:center;padding:5px 0;border-top:1px solid var(--line)}
+.row.head{border-top:0;padding-block:0 4px;font-size:.75rem;font-weight:600}
+.row.head span:nth-child(2){color:var(--f4l)} .row.head span:nth-child(3){color:var(--a3d)}
+.row.one{grid-template-columns:minmax(0,1fr) 100px}
+.row label{font-size:.85rem;color:var(--ink2);line-height:1.25}
+.row small{display:block;color:var(--muted);font-size:.72rem}
+input[type=number]{width:100%;min-width:0;font:500 .9rem var(--mono);color:var(--ink);background:var(--bg);
+  border:1px solid var(--line);border-radius:6px;padding:6px 8px;text-align:right;font-variant-numeric:tabular-nums}
+input[type=number]:focus-visible,input[type=checkbox]:focus-visible{outline:2px solid var(--f4l);outline-offset:1px}
+input.f{border-color:var(--f4l)} input.a{border-color:var(--a3d)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:var(--ink2);padding-top:8px;border-top:1px solid var(--line)}
+.check input{margin-top:3px;accent-color:var(--f4l)}
+
+.results{display:flex;flex-direction:column;gap:26px;min-width:0}
+.verdict{border-left:4px solid var(--f4l);padding:4px 0 4px 16px}
+.verdict p{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(1.15rem,2.4vw,1.5rem);line-height:1.3;text-wrap:balance}
+.verdict .sub{font-family:var(--body);font-weight:400;font-size:.9rem;color:var(--ink2);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.kpi{background:var(--bg);padding:14px 16px;min-width:0}
+.kpi .k{font-size:.78rem;color:var(--muted);margin-bottom:8px}
+.pair{display:flex;gap:20px;flex-wrap:wrap}
+.val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1.35rem;font-weight:500;line-height:1.1}
+.val small{display:block;font-family:var(--body);font-size:.7rem;font-weight:600;margin-bottom:3px}
+.val.f small{color:var(--f4l)} .val.a small{color:var(--a3d)}
+.val .u{font-size:.75rem;color:var(--muted);margin-left:3px}
+
+.card{border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.card h3{margin-bottom:2px}
+.card .cap{color:var(--ink2);font-size:.82rem;margin:0 0 10px}
+.chartbox{position:relative}
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+svg text{font-family:var(--body);fill:var(--ink2);font-size:11px}
+svg .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+svg .gl{stroke:var(--grid);stroke-width:1}
+svg .ax{stroke:var(--line);stroke-width:1}
+svg .tg{stroke:var(--ink2);stroke-width:1.5;stroke-dasharray:5 4;fill:none}
+svg .tgt{fill:var(--ink2);font-weight:600}
+.tip{position:absolute;pointer-events:none;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+  padding:8px 10px;font-size:.78rem;box-shadow:0 4px 14px rgba(0,0,0,.12);min-width:150px;z-index:2}
+.tip b{font-family:var(--mono);font-weight:500}
+.tip .r{display:flex;justify-content:space-between;gap:12px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{text-align:left;padding:7px 10px;border-top:1px solid var(--line);white-space:nowrap}
+thead th{border-top:0;font-size:.75rem}
+th:nth-child(2){color:var(--f4l)} th:nth-child(3){color:var(--a3d)}
+td.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+th:nth-child(n+2){text-align:right}
+tr.sec td{font-weight:600;background:var(--panel);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.cmp ul{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+.cmp li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px}
+.mark{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:700;color:var(--bg)}
+.no .mark{background:var(--a3d)} .yes .mark{background:var(--f4l)}
+.cmp h2{display:flex;align-items:center;gap:8px}
+.cmp li strong{font-weight:600}
+.notes{color:var(--muted);font-size:.8rem;max-width:80ch}
+.notes ul{padding-left:18px;margin:6px 0 0}
+.badge{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:1px 7px;border-radius:99px;border:1px solid var(--line);color:var(--ink2)}
+@media (prefers-reduced-motion:no-preference){.kpi .val{transition:color .2s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Dental TechPro · Productivity comparison</div>
+    <h1>Form 4L vs UltraCraft A3D</h1>
+    <p class="lede">Change resin price, consumption, print times and targets: every result updates instantly. The comparison shows how a Form 4L working 8 hours reaches the daily output of an A3D working around the clock.</p>
+    <div class="legend" aria-label="Legend">
+      <span class="chip"><span class="sw f"></span>Formlabs Form 4L</span>
+      <span class="chip"><span class="sw a"></span>HeyGears UltraCraft A3D</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="controls" aria-label="Inputs">
+      <h2>Inputs</h2>
+      <div class="eyebrow">Fast Model 160 µm, horizontal models</div>
+
+      <div class="grp">
+        <div class="row head"><span>Per printer</span><span>Form 4L</span><span>A3D</span></div>
+        <div class="row"><label for="f_hours">Working hours per day</label><input id="f_hours" class="f" type="number" step="any" min="0" max="24" value="8"><input id="a_hours" class="a" type="number" step="any" min="0" max="24" value="24"></div>
+        <div class="row"><label for="f_mpb">Models per plate</label><input id="f_mpb" class="f" type="number" step="any" min="1" value="32"><input id="a_mpb" class="a" type="number" step="any" min="1" value="8"></div>
+        <div class="row"><label for="f_print">Print time per plate (min)<small>A3D: 12 min gives the declared 720 models per day</small></label><input id="f_print" class="f" type="number" step="any" min="0" value="10"><input id="a_print" class="a" type="number" step="any" min="0" value="12"></div>
+        <div class="row"><label for="f_handle">Part removal and refill per cycle (min)<small>Form 4L: manual. A3D: part removal 90 s + resin refill 150 s, automatic (240 s = 4 min)</small></label><input id="f_handle" class="f" type="number" step="any" min="0" value="5"><input id="a_handle" class="a" type="number" step="any" min="0" value="4"></div>
+        <div class="row"><label for="f_op">Operator minutes per plate</label><input id="f_op" class="f" type="number" step="any" min="0" value="5"><input id="a_op" class="a" type="number" step="any" min="0" value="0"></div>
+      </div>
+
+      <div class="grp">
+        <span class="eyebrow">Resin</span>
+        <div class="row head"><span></span><span>Form 4L</span><span>A3D</span></div>
+        <div class="row"><label for="f_ml">Resin use per model (ml)</label><input id="f_ml" class="f" type="number" step="any" min="0" value="8.62"><input id="a_ml" class="a" type="number" step="any" min="0" value="8.62"></div>
+        <div class="row"><label for="f_price">Resin price (€ per litre)<small>Formlabs €445 per 5 L, HeyGears €85 per litre</small></label><input id="f_price" class="f" type="number" step="any" min="0" value="89"><input id="a_price" class="a" type="number" step="any" min="0" value="85"></div>
+        <div class="row"><label for="f_disc">Resin bulk discount (%)<small>Applied to the price per litre. With tiers on, the Form 4L field fills itself</small></label><input id="f_disc" class="f" type="number" step="any" min="0" max="100" value="0"><input id="a_disc" class="a" type="number" step="any" min="0" max="100" value="0"></div>
+        <label class="check"><input id="auto_disc" type="checkbox" checked><span>Form 4L: apply Formlabs discount tiers based on the litres of resin needed per year, in a single order<small id="discNote" style="display:block;color:var(--muted)"></small></span></label>
+      </div>
+
+      <div class="grp">
+        <span class="eyebrow">Targets and shared costs</span>
+        <div class="row one"><label for="tday">Daily target (models)</label><input id="tday" type="number" step="any" min="0" value="273"></div>
+        <div class="row one"><label for="tyear">Yearly target (models)</label><input id="tyear" type="number" step="any" min="0" value="60000"></div>
+        <div class="row one"><label for="days">Printing days per year</label><input id="days" type="number" step="any" min="1" value="220"></div>
+        <div class="row one"><label for="rate">Operator hourly cost (€/h)</label><input id="rate" type="number" step="any" min="0" value="18"></div>
+        <div class="row one"><label for="hw">Form 4L investment (€)<small>Form 4L basic package</small></label><input id="hw" type="number" step="any" min="0" value="7125"></div>
+        <div class="row one"><label for="lease">HeyGears yearly lease fee (€)<small>Enter it for the 5-year comparison</small></label><input id="lease" type="number" step="any" min="0" value="" placeholder="0"></div>
+        <label class="check"><input id="pp" type="checkbox"><span>Add 6 minutes of post-processing to the Form 4L cycle (cautious scenario)</span></label>
+      </div>
+    </aside>
+
+    <main class="results">
+      <section class="verdict" aria-live="polite">
+        <p id="verdict"></p>
+        <p class="sub" id="verdictSub"></p>
+      </section>
+
+      <section class="kpis" id="kpis" aria-label="Key figures"></section>
+
+      <section class="card">
+        <h3>Cumulative output over 24 hours</h3>
+        <p class="cap">The Form 4L stops at the end of the shift, the A3D keeps going overnight. The dashed line is the daily target.</p>
+        <div class="chartbox" id="cbox"><svg class="chart" id="c1" role="img" aria-label="Cumulative number of models over 24 hours"></svg><div class="tip" id="tip" hidden></div></div>
+      </section>
+
+      <div class="two">
+        <section class="card">
+          <h3>Models per day per printer</h3>
+          <p class="cap">Compared with the daily target.</p>
+          <svg class="chart" id="c2" role="img" aria-label="Models per day per printer"></svg>
+        </section>
+        <section class="card">
+          <h3>Cost per model</h3>
+          <p class="cap">Resin plus labour, in euros.</p>
+          <svg class="chart" id="c3" role="img" aria-label="Cost per model"></svg>
+        </section>
+      </div>
+
+      <section class="card">
+        <h3>All the numbers</h3>
+        <p class="cap">The same results as a table.</p>
+        <div class="tablewrap"><table id="tbl"></table></div>
+      </section>
+    </main>
+  </div>
+
+  <section class="cmp" style="margin-top:36px">
+    <div class="no">
+      <h2>HeyGears system limits</h2>
+      <ul>
+        <li><span class="mark">1</span><span><strong>It is a lease system.</strong> The printer never becomes yours.</span></li>
+        <li><span class="mark">2</span><span><strong>No iperammortamento.</strong> As a result you cannot use Italy's iperammortamento: the +180% super-depreciation on the value of an interconnected digital asset.</span></li>
+        <li><span class="mark">3</span><span><strong>It is a closed system.</strong> It forces you to use its own resins, at an average price of €85 per litre for models.</span></li>
+      </ul>
+    </div>
+    <div class="yes">
+      <h2>Form 4L advantages</h2>
+      <ul>
+        <li><span class="mark">✓</span><span><strong>It becomes yours</strong> with a small investment, equal to one yearly HeyGears lease fee.</span></li>
+        <li><span class="mark">✓</span><span><strong>You can also pay for it with a lease</strong> without losing the iperammortamento benefits.</span></li>
+        <li><span class="mark">✓</span><span><strong>Output:</strong> orthodontic models up to about <span class="badge" id="advMod">1,000</span> per day, plus 120 high-precision models per day.</span></li>
+        <li><span class="mark">✓</span><span><strong>Open materials:</strong> the F4BL version prints biocompatible resins and about 40 resins from other manufacturers with the Open Material Mode licence.</span></li>
+        <li><span class="mark">✓</span><span><strong>Post-processing scales</strong> to industrial size and adds only 6 minutes to the print.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="notes" style="margin-top:32px">
+    <strong>Where the starting numbers come from</strong>
+    <ul>
+      <li>Form 4L: 32 models per plate, 10 minutes of printing, 5 minutes of operator time, 8.62 ml per model and resin at €445 per 5 L, from the Dental TechPro calculator. Investment €7,125 (Form 4L basic package), €18/h labour and a target of 60,000 models in 220 days, from the same calculator.</li>
+      <li>A3D: up to 720 clear aligner models per day per printer (HeyGears); the 2,000 models per day in the brochure are the 4-printer configuration with Resin Station. For the A3D the brochure gives 90 seconds for automatic part removal and 150 seconds for automatic resin refill, 4 minutes in total between one plate and the next. The 8 models per plate are a working value, to be confirmed with the manufacturer, and the 8.62 ml per model is the same as the Form 4L.</li>
+      <li>Formlabs resin volume discounts: 15% from 30 L, 20% from 60 L, 25% from 120 L, 30% from 240 L, 35% from 1,000 L, 40% from 2,000 L, 45% from 3,000 L. The tier depends on the litres in a single order. The calculation assumes one order with all the resin needed in a year for the target, which is the best case; with several orders the discount may be lower (in that case use the manual field). For the A3D the discount is a free field.</li>
+      <li>The 12-minute A3D print time is calculated to reach 720 models per day with 8 models per plate. With labour at 0 minutes the A3D is treated as fully automatic.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var nf=function(n,d){d=d||0;return new Intl.NumberFormat('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d}).format(n)};
+  var eur=function(n,d){return '€ '+nf(n,d==null?2:d)};
+  var v=function(id){var x=parseFloat(String($(id).value).replace(',','.'));return isFinite(x)?x:0};
+
+  var lastEdited='';
+  function syncTargets(src){
+    var days=Math.max(v('days'),1);
+    if(src==='tday'){ $('tyear').value=String(Math.round(v('tday')*days)); }
+    else if(src==='tyear'||src==='days'){ $('tday').value=String(Math.round(v('tyear')/days)); }
+  }
+
+  function machine(k,extra){
+    var m={hours:v(k+'_hours'),mpb:Math.max(v(k+'_mpb'),1),print:v(k+'_print'),handle:v(k+'_handle'),
+           op:v(k+'_op'),ml:v(k+'_ml'),price:v(k+'_price'),disc:Math.min(Math.max(v(k+'_disc'),0),100),extra:extra||0};
+    m.priceNet=m.price*(1-m.disc/100);
+    var rate=v('rate');
+    m.cycle=m.print+m.handle+m.extra;
+    m.builds=m.cycle>0?Math.floor(m.hours*60/m.cycle+1e-9):0;
+    m.perDay=m.builds*m.mpb;
+    m.perHour=m.cycle>0?m.mpb*60/m.cycle:0;
+    m.mat=m.ml/1000*m.priceNet;
+    m.lab=m.op/60*rate/m.mpb;
+    m.cost=m.mat+m.lab;
+    m.resinDay=m.perDay*m.ml/1000;
+    m.opHours=m.builds*m.op/60;
+    m.printers=m.perDay>0?Math.ceil(v('tday')/m.perDay):Infinity;
+    m.annualCost=v('tyear')*m.cost;
+    m.annualResin=v('tyear')*m.ml/1000;
+    return m;
+  }
+
+  function cum(m,t){
+    if(m.cycle<=0) return 0;
+    if(t>=m.hours) return m.perDay;
+    return Math.min(m.perDay,t*60/m.cycle*m.mpb);
+  }
+  function niceMax(x){
+    if(x<=0) return 10;
+    var p=Math.pow(10,Math.floor(Math.log10(x))), n=x/p;
+    var s=n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10;
+    return s*p;
+  }
+  var S=function(t){return t};
+
+  function drawLine(F,A){
+    var W=640,H=300,L=54,R=16,T=18,B=40,pw=W-L-R,ph=H-T-B;
+    var tday=v('tday');
+    var ymax=niceMax(Math.max(F.perDay,A.perDay,tday)*1.08);
+    var X=function(t){return L+t/24*pw}, Y=function(n){return T+ph-n/ymax*ph};
+    var s='<g>';
+    var ticks=5;
+    for(var i=0;i<=ticks;i++){
+      var yv=ymax/ticks*i, y=Y(yv);
+      s+='<line class="gl" x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'"/>';
+      s+='<text class="mono" x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end">'+nf(yv)+'</text>';
+    }
+    for(var h=0;h<=24;h+=4){
+      s+='<text x="'+X(h)+'" y="'+(H-T+8)+'" text-anchor="middle">'+h+' h</text>';
+    }
+    s+='<line class="ax" x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(0)+'" y2="'+Y(0)+'"/>';
+    // end of Form 4L shift
+    if(F.hours>0&&F.hours<24){
+      s+='<line class="gl" x1="'+X(F.hours)+'" x2="'+X(F.hours)+'" y1="'+T+'" y2="'+Y(0)+'" stroke-dasharray="2 3"/>';
+    }
+    // target
+    if(tday>0){
+      s+='<line class="tg" x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(tday)+'" y2="'+Y(tday)+'"/>';
+      s+='<text class="tgt" x="'+(W-R)+'" y="'+(Y(tday)-6)+'" text-anchor="end">Target '+nf(tday)+'</text>';
+    }
+    function path(m,cls){
+      var d='';
+      for(var t=0;t<=24.0001;t+=0.25){ d+=(t===0?'M':'L')+X(t).toFixed(1)+' '+Y(cum(m,t)).toFixed(1)+' '; }
+      return '<path d="'+d+'" fill="none" style="stroke:var(--'+cls+')" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    }
+    s+=path(A,'a3d')+path(F,'f4l');
+    // endpoints and direct labels
+    var fx=X(Math.min(F.hours,24)), fy=Y(F.perDay);
+    s+='<circle cx="'+fx+'" cy="'+fy+'" r="5" style="fill:var(--f4l);stroke:var(--bg)" stroke-width="2"/>';
+    s+='<text class="mono" x="'+fx+'" y="'+(fy-10)+'" text-anchor="'+(fx>W-90?'end':'middle')+'" style="fill:var(--f4l);font-weight:600">Form 4L '+nf(F.perDay)+'</text>';
+    var ay=Y(A.perDay);
+    s+='<circle cx="'+X(24)+'" cy="'+ay+'" r="5" style="fill:var(--a3d);stroke:var(--bg)" stroke-width="2"/>';
+    var aLabelY=(Math.abs(ay-fy)<16&&fx>W-140)?ay+18:ay-10;
+    s+='<text class="mono" x="'+(X(24)-4)+'" y="'+aLabelY+'" text-anchor="end" style="fill:var(--a3d);font-weight:600">A3D '+nf(A.perDay)+'</text>';
+    s+='<line id="cx" class="ax" x1="0" x2="0" y1="'+T+'" y2="'+Y(0)+'" visibility="hidden"/>';
+    s+='<circle id="cf" r="4" style="fill:var(--f4l);stroke:var(--bg)" stroke-width="2" visibility="hidden"/>';
+    s+='<circle id="ca" r="4" style="fill:var(--a3d);stroke:var(--bg)" stroke-width="2" visibility="hidden"/>';
+    s+='<rect id="hit" x="'+L+'" y="'+T+'" width="'+pw+'" height="'+ph+'" fill="transparent"/>';
+    s+='</g>';
+    var svg=$('c1'); svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.innerHTML=s;
+
+    var hit=$('hit'),tip=$('tip'),box=$('cbox');
+    function move(ev){
+      var r=svg.getBoundingClientRect();
+      var px=(ev.clientX-r.left)/r.width*W;
+      var t=Math.max(0,Math.min(24,Math.round((px-L)/pw*24*4)/4));
+      var f=cum(F,t),a=cum(A,t);
+      var cx=$('cx'); cx.setAttribute('x1',X(t)); cx.setAttribute('x2',X(t)); cx.setAttribute('visibility','visible');
+      var cf=$('cf'),ca=$('ca');
+      cf.setAttribute('cx',X(t)); cf.setAttribute('cy',Y(f)); cf.setAttribute('visibility','visible');
+      ca.setAttribute('cx',X(t)); ca.setAttribute('cy',Y(a)); ca.setAttribute('visibility','visible');
+      tip.hidden=false;
+      tip.innerHTML='<div style="font-weight:600;margin-bottom:4px">After '+nf(t,2)+' h</div>'+
+        '<div class="r"><span style="color:var(--f4l)">Form 4L</span><b>'+nf(f)+'</b></div>'+
+        '<div class="r"><span style="color:var(--a3d)">A3D</span><b>'+nf(a)+'</b></div>';
+      var bw=box.getBoundingClientRect(), left=ev.clientX-bw.left+14;
+      if(left>bw.width-170) left=ev.clientX-bw.left-170;
+      tip.style.left=left+'px'; tip.style.top=Math.max(0,ev.clientY-bw.top-50)+'px';
+    }
+    function leave(){
+      tip.hidden=true;
+      ['cx','cf','ca'].forEach(function(i){$(i).setAttribute('visibility','hidden')});
+    }
+    hit.addEventListener('pointermove',move); hit.addEventListener('pointerdown',move);
+    hit.addEventListener('pointerleave',leave);
+  }
+
+  function hbar(id,rows,opts){
+    var W=320,rowH=46,T=10,L=6,R=70,H=T+rows.length*rowH+24;
+    var max=opts.max;
+    var pw=W-L-R;
+    var X=function(x){return L+Math.max(0,x)/max*pw};
+    var s='';
+    rows.forEach(function(r,i){
+      var y=T+i*rowH;
+      s+='<text x="'+L+'" y="'+(y+11)+'" style="fill:var(--ink2);font-size:11px">'+r.label+'</text>';
+      var w=Math.max(X(r.value)-L,2);
+      s+='<rect x="'+L+'" y="'+(y+18)+'" width="'+w.toFixed(1)+'" height="18" rx="4" style="fill:var(--'+r.cls+')"><title>'+r.label+': '+r.text+'</title></rect>';
+      s+='<text class="mono" x="'+(L+w+6)+'" y="'+(y+32)+'" style="fill:var(--ink);font-weight:500;font-size:12px">'+r.text+'</text>';
+    });
+    if(opts.target>0){
+      var tx=X(opts.target);
+      s+='<line class="tg" x1="'+tx+'" x2="'+tx+'" y1="'+(T-2)+'" y2="'+(T+rows.length*rowH)+'"/>';
+      s+='<text class="tgt" x="'+tx+'" y="'+(H-4)+'" text-anchor="'+(tx>W-90?'end':'middle')+'">'+opts.targetLabel+'</text>';
+    }
+    var svg=$(id); svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.innerHTML=s;
+  }
+
+  function kpi(label,f,a){
+    return '<div class="kpi"><div class="k">'+label+'</div><div class="pair">'+
+      '<div class="val f"><small>Form 4L</small>'+f+'</div><div class="val a"><small>A3D</small>'+a+'</div></div></div>';
+  }
+  var u=function(t){return '<span class="u">'+t+'</span>'};
+
+  var TIERS=[[30,15],[60,20],[120,25],[240,30],[1000,35],[2000,40],[3000,45]];
+  function tierDisc(L){var d=0;TIERS.forEach(function(t){if(L>=t[0])d=t[1]});return d}
+  function applyTiers(){
+    var on=$('auto_disc').checked, fd=$('f_disc');
+    fd.disabled=on;
+    if(on){
+      var L=v('tyear')*v('f_ml')/1000, d=tierDisc(L);
+      fd.value=String(d);
+      var next=null; TIERS.forEach(function(t){if(next===null&&L<t[0])next=t});
+      $('discNote').textContent=nf(L,0)+' L per year in one order: discount '+d+'%'+(next?'. Next tier is '+next[1]+'% from '+nf(next[0])+' L.':'.');
+    } else { $('discNote').textContent=''; }
+  }
+  function render(){
+    applyTiers();
+    var F=machine('f',$('pp').checked?6:0), A=machine('a',0);
+    var tday=v('tday'), tyear=v('tyear');
+
+    // verdict
+    var vt,vs;
+    if(F.perDay>=A.perDay && A.perDay>0){
+      var hn=F.perHour>0?A.perDay/F.perHour:0;
+      vt='In '+nf(F.hours,0)+' hours the Form 4L prints '+nf(F.perDay)+' models. The A3D prints '+nf(A.perDay)+' in '+nf(A.hours,0)+' hours.';
+      vs='The Form 4L reaches the A3D daily output in about '+nf(hn,1)+' working hours, at '+nf(F.perHour,0)+' models per hour against '+nf(A.perHour,0)+'.'+
+         (F.opHours>0?' It needs an operator for about '+nf(F.opHours,1)+' hours per day.':'');
+    } else if(A.perDay>0){
+      var hn2=F.perHour>0?A.perDay/F.perHour:Infinity;
+      var need=F.perDay>0?Math.ceil(A.perDay/F.perDay):0;
+      vt='In '+nf(F.hours,0)+' hours the Form 4L reaches '+nf(F.perDay)+' models, '+nf(A.perDay>0?F.perDay/A.perDay*100:0,0)+'% of the A3D\'s '+nf(A.perDay)+'.';
+      vs=(isFinite(hn2)&&hn2<=24?'To match the A3D it takes about '+nf(hn2,1)+' working hours':'It takes more than one day to match the A3D')+(need>1?', or '+need+' Form 4L printers in parallel.':'.');
+    } else { vt='Enter the A3D print times to see the comparison.'; vs=''; }
+    $('verdict').textContent=vt; $('verdictSub').textContent=vs;
+    $('advMod').textContent='about '+nf(Math.round(F.perDay/10)*10);
+
+    var reach=(tday>0&&F.perDay>0)?(F.printers<=1?'1 printer':F.printers+' printers'):'-';
+    var reachA=(tday>0&&A.perDay>0)?(A.printers<=1?'1 printer':A.printers+' printers'):'-';
+    var lease=v('lease');
+    var kp='';
+    kp+=kpi('Models per day per printer',nf(F.perDay),nf(A.perDay));
+    kp+=kpi('Models per hour',nf(F.perHour,1),nf(A.perHour,1));
+    kp+=kpi('Plates per day / cycle','<span style="font-size:1.05rem">'+nf(F.builds)+' · '+nf(F.cycle,0)+u('min')+'</span>','<span style="font-size:1.05rem">'+nf(A.builds)+' · '+nf(A.cycle,0)+u('min')+'</span>');
+    kp+=kpi('Printers for the daily target','<span style="font-size:1.05rem">'+reach+'</span>','<span style="font-size:1.05rem">'+reachA+'</span>');
+    kp+=kpi('Cost per model (resin + labour)',eur(F.cost),eur(A.cost));
+    kp+=kpi('Yearly cost for '+nf(tyear)+' models',eur(F.annualCost,0),eur(A.annualCost,0));
+    kp+=kpi('Resin per day at full capacity',nf(F.resinDay,1)+u('L'),nf(A.resinDay,1)+u('L'));
+    var hwF=v('hw');
+    if(lease>0){
+      var y5F=hwF+F.annualCost*5, y5A=lease*5+A.annualCost*5;
+      kp+=kpi('5-year cost (machine + target production)',eur(y5F,0),eur(y5A,0));
+    } else {
+      kp+=kpi('Machine cost','<span style="font-size:1.05rem">'+eur(hwF,0)+' one-off</span>','<span style="font-size:1.05rem">Lease, never owned</span>');
+    }
+    $('kpis').innerHTML=kp;
+    drawLine(F,A);
+
+    var m2=Math.max(F.perDay,A.perDay,tday)*1.15||1;
+    hbar('c2',[
+      {label:'Form 4L ('+nf(F.hours,0)+' h)',value:F.perDay,cls:'f4l',text:nf(F.perDay)},
+      {label:'A3D ('+nf(A.hours,0)+' h)',value:A.perDay,cls:'a3d',text:nf(A.perDay)}
+    ],{max:m2,target:tday,targetLabel:'Target '+nf(tday)});
+    var m3=Math.max(F.cost,A.cost)*1.35||1;
+    hbar('c3',[
+      {label:'Form 4L: resin '+eur(F.mat)+' + labour '+eur(F.lab),value:F.cost,cls:'f4l',text:eur(F.cost)},
+      {label:'A3D: resin '+eur(A.mat)+' + labour '+eur(A.lab),value:A.cost,cls:'a3d',text:eur(A.cost)}
+    ],{max:m3,target:0});
+
+    var rows=[
+      ['sec','Output'],
+      ['Cycle time per plate (min)',nf(F.cycle,1),nf(A.cycle,1)],
+      ['Plates per day',nf(F.builds),nf(A.builds)],
+      ['Models per day per printer',nf(F.perDay),nf(A.perDay)],
+      ['Models per hour',nf(F.perHour,1),nf(A.perHour,1)],
+      ['Models per year per printer',nf(F.perDay*v('days')),nf(A.perDay*v('days'))],
+      ['Operator hours per day',nf(F.opHours,1),nf(A.opHours,1)],
+      ['sec','Resin'],
+      ['Resin per plate (ml)',nf(F.mpb*F.ml,1),nf(A.mpb*A.ml,1)],
+      ['Resin per day at full capacity (L)',nf(F.resinDay,1),nf(A.resinDay,1)],
+      ['Resin per year for the target (L)',nf(F.annualResin,0),nf(A.annualResin,0)],
+      ['sec','Costs'],
+      ['Resin discount (%)',nf(F.disc,0),nf(A.disc,0)],
+      ['Net resin price (€ per litre)',nf(F.priceNet,2),nf(A.priceNet,2)],
+      ['Resin per model (€)',nf(F.mat,2),nf(A.mat,2)],
+      ['Labour per model (€)',nf(F.lab,2),nf(A.lab,2)],
+      ['Total cost per model (€)',nf(F.cost,2),nf(A.cost,2)],
+      ['Yearly cost for the target (€)',nf(F.annualCost,0),nf(A.annualCost,0)]
+    ];
+    var t='<thead><tr><th>Item</th><th>Form 4L</th><th>A3D</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      if(r[0]==='sec') t+='<tr class="sec"><td colspan="3">'+r[1]+'</td></tr>';
+      else t+='<tr><td>'+r[0]+'</td><td class="n">'+r[1]+'</td><td class="n">'+r[2]+'</td></tr>';
+    });
+    $('tbl').innerHTML=t+'</tbody>';
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('input'),function(el){
+    el.addEventListener('input',function(){ syncTargets(el.id); render(); });
+    el.addEventListener('change',function(){ syncTargets(el.id); render(); });
+  });
+  render();
+})();
+</script>
+</body>
+</html>
